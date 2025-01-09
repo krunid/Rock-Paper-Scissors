@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rock Paper Scissors</title>
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(45deg, #f5d142, #d4a017);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Kanit', sans-serif;
+        }
+
+        .game-container {
+            text-align: center;
+            background-color: #fff5e6;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            color: #b8860b;
+        }
+
+        .scoreboard {
+            margin-bottom: 20px;
+            font-size: 18px;
+            color: #4b4b4b;
+        }
+
+        .button-container {
+            margin-top: 20px;
+        }
+
+        button {
+            background-color: #ffd700;
+            color: #4b4b4b;
+            border: none;
+            padding: 10px;
+            font-size: 18px;
+            margin: 10px;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button img {
+            width: 80px;
+            height: 80px;
+            
+        }
+
+        button:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        button:active {
+            transform: scale(1.05);
+        }
+
+        .popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            display: none;
+            z-index: 1000;
+        }
+
+        .popup h2 {
+            margin-bottom: 10px;
+            color: #b8860b;
+        }
+
+        .popup p {
+            margin: 10px 0;
+        }
+
+        .popup button {
+            background-color: #ffd700;
+            color: #4b4b4b;
+            border: none;
+            padding: 10px 20px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .popup button:hover {
+            background-color: #e5c100;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <h1>Rock Paper Scissors</h1>
+        <h3>ค้อน กระดาษ กรรไกร</h3>
+        <div class="scoreboard">
+            ผู้เล่น: <span id="player-score">0</span> | คอมพิวเตอร์: <span id="computer-score">0</span>
+        </div>
+        <div class="button-container">
+            <button onclick="playGame('rock')">
+                <img src="https://krunid.github.io/knid13/0-rock.png" alt="Rock"></button>
+            <button onclick="playGame('paper')">
+                <img src="https://krunid.github.io/knid13/0-paper.png" alt="Paper"></button>
+            <button onclick="playGame('scissors')">
+                <img src="https://krunid.github.io/knid13/0-scissors.png" alt="Scissors"></button>
+        </div>
+    </div>
+
+    <div class="overlay" id="overlay"></div>
+    <div class="popup" id="popup">
+        <h2 id="popup-title"></h2>
+        <p id="popup-message"></p>
+        <button onclick="closePopup()">OK</button>
+    </div>
+
+    <script>
+        let playerScore = 0;
+        let computerScore = 0;
+
+        function playGame(playerChoice) {
+            const choices = ['rock', 'paper', 'scissors'];
+            const computerChoice = choices[Math.floor(Math.random() * choices.length)];
+
+            let result;
+
+            if (playerChoice === computerChoice) {
+                result = "เสมอ!";
+            } else if (
+                (playerChoice === 'rock' && computerChoice === 'scissors') ||
+                (playerChoice === 'paper' && computerChoice === 'rock') ||
+                (playerChoice === 'scissors' && computerChoice === 'paper')
+            ) {
+                result = 'คุณชนะ!';
+                playerScore++;
+            } else {
+                result = 'คุณแพ้!';
+                computerScore++;
+            }
+
+            updateScore();
+
+            if (playerScore === 10 || computerScore === 10) {
+                const winner = playerScore === 10 ? 'ผู้เล่น' : 'คอมพิวเตอร์';
+                showPopup('เกมจบ!', `${winner} ชนะ!`);
+                resetGame();
+            } else {
+                showPopup(`คุณเลือก: ${playerChoice}`, `คอมพิวเตอร์: ${computerChoice}\n${result}`);
+            }
+        }
+
+        function updateScore() {
+            document.getElementById('player-score').innerText = playerScore;
+            document.getElementById('computer-score').innerText = computerScore;
+        }
+
+        function resetGame() {
+            playerScore = 0;
+            computerScore = 0;
+            updateScore();
+        }
+
+        function showPopup(title, message) {
+            document.getElementById('popup-title').innerText = title;
+            document.getElementById('popup-message').innerText = message;
+            document.getElementById('overlay').style.display = 'block';
+            document.getElementById('popup').style.display = 'block';
+        }
+
+        function closePopup() {
+            document.getElementById('overlay').style.display = 'none';
+            document.getElementById('popup').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
